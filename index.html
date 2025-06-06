@@ -83,6 +83,11 @@
       cursor: not-allowed;
     }
 
+   .selected {
+      background-color: #d0e7ff;
+      border-color: #007bff;
+    }
+
   </style>
 </head>
 <body>
@@ -127,80 +132,86 @@
   </div>
 
   <script>
-    const perguntas = document.querySelectorAll('.question');
-    const btn = document.getElementById('nextBtn');
-    const resultado = document.getElementById('result');
-    let atual = 0;
-    let respostasSelecionadas = [];
+  const perguntas = document.querySelectorAll('.question');
+  const btn = document.getElementById('nextBtn');
+  const resultado = document.getElementById('result');
+  let atual = 0;
+  let respostasSelecionadas = [];
 
-    btn.addEventListener('click', () => {
-      const perguntaAtual = perguntas[atual];
-      const radios = perguntaAtual.querySelectorAll('input[type="radio"]');
-      let selecionado = false;
-      let escolha;
+  // Detecta mudança de opção e aplica estilo azul
+  document.querySelectorAll('input[type="radio"]').forEach(radio => {
+    radio.addEventListener('change', (e) => {
+      const labels = e.target.closest('.options').querySelectorAll('label');
+      labels.forEach(label => label.classList.remove('selected'));
+      e.target.parentElement.classList.add('selected');
+    });
+  });
 
-      radios.forEach(radio => {
-        if (radio.checked) {
-          selecionado = true;
-          escolha = radio.value;
-        }
-      });
+  btn.addEventListener('click', () => {
+    const perguntaAtual = perguntas[atual];
+    const radios = perguntaAtual.querySelectorAll('input[type="radio"]');
+    let selecionado = false;
+    let escolha;
 
-      if (!selecionado) {
-        alert('Por favor, selecione uma resposta antes de continuar.');
-        return;
-      }
-
-      respostasSelecionadas[atual] = escolha;
-
-      // Esconde a pergunta atual
-      perguntaAtual.classList.remove('active');
-
-      atual++;
-
-      if (atual < perguntas.length) {
-        // Mostra a próxima pergunta
-        perguntas[atual].classList.add('active');
-
-        if (atual === perguntas.length - 1) {
-          btn.textContent = 'Finalizar';
-        }
-      } else {
-        // Acabou o quiz, mostra resultado
-        mostrarResultado();
+    radios.forEach(radio => {
+      if (radio.checked) {
+        selecionado = true;
+        escolha = radio.value;
       }
     });
 
-    function mostrarResultado() {
-      let corretas = 0;
+    if (!selecionado) {
+      alert('Por favor, selecione uma resposta antes de continuar.');
+      return;
+    }
 
-      perguntas.forEach((pergunta, i) => {
-        const correta = pergunta.dataset.answer;
-        const labels = pergunta.querySelectorAll('label');
+    respostasSelecionadas[atual] = escolha;
 
-        labels.forEach(label => {
-          const input = label.querySelector('input');
-          label.classList.remove('correct', 'incorrect');
-          if (input.value === correta) {
-            label.classList.add('correct');
-          }
-          if (respostasSelecionadas[i] === input.value && input.value !== correta) {
-            label.classList.add('incorrect');
-          }
-          // Desabilita todas as opções
-          input.disabled = true;
-        });
+    // Esconde a pergunta atual
+    perguntaAtual.classList.remove('active');
 
-        if (respostasSelecionadas[i] === correta) {
-          corretas++;
+    atual++;
+
+    if (atual < perguntas.length) {
+      // Mostra a próxima pergunta
+      perguntas[atual].classList.add('active');
+
+      if (atual === perguntas.length - 1) {
+        btn.textContent = 'Finalizar';
+      }
+    } else {
+      // Fim do quiz
+      mostrarResultado();
+    }
+  });
+
+  function mostrarResultado() {
+    let corretas = 0;
+
+    perguntas.forEach((pergunta, i) => {
+      const correta = pergunta.dataset.answer;
+      const labels = pergunta.querySelectorAll('label');
+
+      labels.forEach(label => {
+        const input = label.querySelector('input');
+        label.classList.remove('correct', 'incorrect', 'selected');
+        if (input.value === correta) {
+          label.classList.add('correct');
         }
+        if (respostasSelecionadas[i] === input.value && input.value !== correta) {
+          label.classList.add('incorrect');
+        }
+        input.disabled = true;
       });
 
-      btn.disabled = true;
+      pergunta.classList.add('active'); // mostra todas ao final
+    });
 
-      resultado.textContent = `Você acertou ${corretas} de ${perguntas.length} perguntas!`;
-      resultado.scrollIntoView({behavior: 'smooth'});
-    }
+    btn.style.display = 'none'; // esconde botão
+    resultado.textContent = `Você acertou ${corretas} de ${perguntas.length} perguntas!`;
+    resultado.scrollIntoView({ behavior: 'smooth' });
+  }
+
   </script>
 </body>
 </html>
