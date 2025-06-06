@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz Simples</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f4f4f4;
+    }
+
+    .quiz-container {
+      max-width: 500px;
+      margin: auto;
+    }
+
+    .question {
+      margin-bottom: 30px;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .question h3 {
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+
+    .options label {
+      display: flex;
+      align-items: center;
+      margin: 8px 0;
+      padding: 10px;
+      border-radius: 50px;
+      border: 2px solid #ccc;
+      transition: background 0.3s;
+      cursor: pointer;
+    }
+
+    .options input[type="radio"] {
+      display: none;
+    }
+
+    .correct {
+      background-color: #c8f7c5;
+      border-color: #5cb85c;
+    }
+
+    .incorrect {
+      background-color: #f8d7da;
+      border-color: #d9534f;
+    }
+
+    #result {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    button {
+      display: block;
+      margin: 20px auto;
+      padding: 12px 24px;
+      font-size: 16px;
+      border: none;
+      background-color: #007bff;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      background-color: #999;
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <form id="quizForm">
+      <div class="question" data-answer="2">
+        <h3>1. Qual é a capital do Brasil?</h3>
+        <div class="options">
+          <label><input type="radio" name="q1" value="0"> São Paulo</label>
+          <label><input type="radio" name="q1" value="1"> Rio de Janeiro</label>
+          <label><input type="radio" name="q1" value="2"> Brasília</label>
+          <label><input type="radio" name="q1" value="3"> Salvador</label>
+          <label><input type="radio" name="q1" value="4"> Belo Horizonte</label>
+        </div>
+      </div>
+
+      <div class="question" data-answer="1">
+        <h3>2. Qual planeta é conhecido como o planeta vermelho?</h3>
+        <div class="options">
+          <label><input type="radio" name="q2" value="0"> Terra</label>
+          <label><input type="radio" name="q2" value="1"> Marte</label>
+          <label><input type="radio" name="q2" value="2"> Júpiter</label>
+          <label><input type="radio" name="q2" value="3"> Vênus</label>
+          <label><input type="radio" name="q2" value="4"> Saturno</label>
+        </div>
+      </div>
+
+      <div class="question" data-answer="0">
+        <h3>3. Qual o maior animal terrestre?</h3>
+        <div class="options">
+          <label><input type="radio" name="q3" value="0"> Elefante</label>
+          <label><input type="radio" name="q3" value="1"> Hipopótamo</label>
+          <label><input type="radio" name="q3" value="2"> Girafa</label>
+          <label><input type="radio" name="q3" value="3"> Urso</label>
+          <label><input type="radio" name="q3" value="4"> Rinoceronte</label>
+        </div>
+      </div>
+
+      <button type="button" onclick="verificarRespostas()">Enviar Respostas</button>
+    </form>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    function verificarRespostas() {
+      let corretas = 0;
+      const perguntas = document.querySelectorAll('.question');
+
+      perguntas.forEach((pergunta, index) => {
+        const respostaCorreta = pergunta.dataset.answer;
+        const radios = pergunta.querySelectorAll('input[type="radio"]');
+        let respondido = false;
+
+        radios.forEach((radio, i) => {
+          const label = radio.parentElement;
+          if (radio.checked) {
+            respondido = true;
+            if (radio.value === respostaCorreta) {
+              label.classList.add('correct');
+              corretas++;
+            } else {
+              label.classList.add('incorrect');
+            }
+          }
+          radio.disabled = true;
+        });
+
+        if (!respondido) {
+          pergunta.style.border = '2px solid red';
+        }
+      });
+
+      document.querySelector('button').disabled = true;
+
+      const resultado = document.getElementById('result');
+      resultado.textContent = `Você acertou ${corretas} de ${perguntas.length} perguntas!`;
+    }
+  </script>
+</body>
+</html>
