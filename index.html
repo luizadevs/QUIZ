@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quiz Simples</title>
   <style>
     body {
@@ -18,15 +18,20 @@
     }
 
     .question {
+      display: none;
+      margin-bottom: 30px;
       background: white;
       padding: 20px;
       border-radius: 12px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      display: none; /* inicialmente escondida */
     }
 
     .question.active {
-      display: block; /* só a ativa aparece */
+      display: block;
+    }
+
+    .question.final {
+      margin-bottom: 30px;
     }
 
     .question h3 {
@@ -59,9 +64,14 @@
       border-color: #d9534f;
     }
 
+    .selected {
+      background-color: #d0e7ff;
+      border-color: #007bff;
+    }
+
     #result {
       text-align: center;
-      margin-top: 20px;
+      margin-bottom: 30px;
       font-size: 20px;
       font-weight: bold;
     }
@@ -80,138 +90,134 @@
 
     button:disabled {
       background-color: #999;
-      cursor: not-allowed;
     }
-
-   .selected {
-      background-color: #d0e7ff;
-      border-color: #007bff;
-    }
-
   </style>
 </head>
 <body>
   <div class="quiz-container">
+    <div id="result"></div>
     <form id="quizForm">
-      <div class="question active" data-answer="2">
+      <div class="question" data-answer="2">
         <h3>1. Qual é a capital do Brasil?</h3>
         <div class="options">
-          <label><input type="radio" name="q1" value="0" /> São Paulo</label>
-          <label><input type="radio" name="q1" value="1" /> Rio de Janeiro</label>
-          <label><input type="radio" name="q1" value="2" /> Brasília</label>
-          <label><input type="radio" name="q1" value="3" /> Salvador</label>
-          <label><input type="radio" name="q1" value="4" /> Belo Horizonte</label>
+          <label><input type="radio" name="q1" value="0"> São Paulo</label>
+          <label><input type="radio" name="q1" value="1"> Rio de Janeiro</label>
+          <label><input type="radio" name="q1" value="2"> Brasília</label>
+          <label><input type="radio" name="q1" value="3"> Salvador</label>
+          <label><input type="radio" name="q1" value="4"> Belo Horizonte</label>
         </div>
       </div>
 
       <div class="question" data-answer="1">
         <h3>2. Qual planeta é conhecido como o planeta vermelho?</h3>
         <div class="options">
-          <label><input type="radio" name="q2" value="0" /> Terra</label>
-          <label><input type="radio" name="q2" value="1" /> Marte</label>
-          <label><input type="radio" name="q2" value="2" /> Júpiter</label>
-          <label><input type="radio" name="q2" value="3" /> Vênus</label>
-          <label><input type="radio" name="q2" value="4" /> Saturno</label>
+          <label><input type="radio" name="q2" value="0"> Terra</label>
+          <label><input type="radio" name="q2" value="1"> Marte</label>
+          <label><input type="radio" name="q2" value="2"> Júpiter</label>
+          <label><input type="radio" name="q2" value="3"> Vênus</label>
+          <label><input type="radio" name="q2" value="4"> Saturno</label>
         </div>
       </div>
 
       <div class="question" data-answer="0">
         <h3>3. Qual o maior animal terrestre?</h3>
         <div class="options">
-          <label><input type="radio" name="q3" value="0" /> Elefante</label>
-          <label><input type="radio" name="q3" value="1" /> Hipopótamo</label>
-          <label><input type="radio" name="q3" value="2" /> Girafa</label>
-          <label><input type="radio" name="q3" value="3" /> Urso</label>
-          <label><input type="radio" name="q3" value="4" /> Rinoceronte</label>
+          <label><input type="radio" name="q3" value="0"> Elefante</label>
+          <label><input type="radio" name="q3" value="1"> Hipopótamo</label>
+          <label><input type="radio" name="q3" value="2"> Girafa</label>
+          <label><input type="radio" name="q3" value="3"> Urso</label>
+          <label><input type="radio" name="q3" value="4"> Rinoceronte</label>
         </div>
       </div>
-
-      <button type="button" id="nextBtn">Próxima</button>
     </form>
-    <div id="result"></div>
+    <button id="nextBtn">Próxima</button>
   </div>
 
   <script>
-  const perguntas = document.querySelectorAll('.question');
-  const btn = document.getElementById('nextBtn');
-  const resultado = document.getElementById('result');
-  let atual = 0;
-  let respostasSelecionadas = [];
+    const perguntas = document.querySelectorAll('.question');
+    const btn = document.getElementById('nextBtn');
+    const resultado = document.getElementById('result');
+    let atual = 0;
+    let respostasSelecionadas = [];
 
-  // Detecta mudança de opção e aplica estilo azul
-  document.querySelectorAll('input[type="radio"]').forEach(radio => {
-    radio.addEventListener('change', (e) => {
-      const labels = e.target.closest('.options').querySelectorAll('label');
-      labels.forEach(label => label.classList.remove('selected'));
-      e.target.parentElement.classList.add('selected');
-    });
-  });
+    // Ativa a primeira pergunta
+    perguntas[0].classList.add('active');
 
-  btn.addEventListener('click', () => {
-    const perguntaAtual = perguntas[atual];
-    const radios = perguntaAtual.querySelectorAll('input[type="radio"]');
-    let selecionado = false;
-    let escolha;
-
-    radios.forEach(radio => {
-      if (radio.checked) {
-        selecionado = true;
-        escolha = radio.value;
-      }
+    // Marca opção como azul ao selecionar
+    document.querySelectorAll('input[type="radio"]').forEach(radio => {
+      radio.addEventListener('change', (e) => {
+        const labels = e.target.closest('.options').querySelectorAll('label');
+        labels.forEach(label => label.classList.remove('selected'));
+        e.target.parentElement.classList.add('selected');
+      });
     });
 
-    if (!selecionado) {
-      alert('Por favor, selecione uma resposta antes de continuar.');
-      return;
-    }
+    btn.addEventListener('click', () => {
+      const perguntaAtual = perguntas[atual];
+      const radios = perguntaAtual.querySelectorAll('input[type="radio"]');
+      let selecionado = false;
+      let escolha;
 
-    respostasSelecionadas[atual] = escolha;
-
-    // Esconde a pergunta atual
-    perguntaAtual.classList.remove('active');
-
-    atual++;
-
-    if (atual < perguntas.length) {
-      // Mostra a próxima pergunta
-      perguntas[atual].classList.add('active');
-
-      if (atual === perguntas.length - 1) {
-        btn.textContent = 'Finalizar';
-      }
-    } else {
-      // Fim do quiz
-      mostrarResultado();
-    }
-  });
-
-  function mostrarResultado() {
-    let corretas = 0;
-
-    perguntas.forEach((pergunta, i) => {
-      const correta = pergunta.dataset.answer;
-      const labels = pergunta.querySelectorAll('label');
-
-      labels.forEach(label => {
-        const input = label.querySelector('input');
-        label.classList.remove('correct', 'incorrect', 'selected');
-        if (input.value === correta) {
-          label.classList.add('correct');
+      radios.forEach(radio => {
+        if (radio.checked) {
+          selecionado = true;
+          escolha = radio.value;
         }
-        if (respostasSelecionadas[i] === input.value && input.value !== correta) {
-          label.classList.add('incorrect');
-        }
-        input.disabled = true;
       });
 
-      pergunta.classList.add('active'); // mostra todas ao final
+      if (!selecionado) {
+        alert('Por favor, selecione uma resposta antes de continuar.');
+        return;
+      }
+
+      respostasSelecionadas[atual] = escolha;
+
+      perguntaAtual.classList.remove('active');
+      atual++;
+
+      if (atual < perguntas.length) {
+        perguntas[atual].classList.add('active');
+        if (atual === perguntas.length - 1) {
+          btn.textContent = 'Finalizar';
+        }
+      } else {
+        mostrarResultado();
+      }
     });
 
-    btn.style.display = 'none'; // esconde botão
-    resultado.textContent = `Você acertou ${corretas} de ${perguntas.length} perguntas!`;
-    resultado.scrollIntoView({ behavior: 'smooth' });
-  }
+    function mostrarResultado() {
+      let corretas = 0;
 
+      perguntas.forEach((pergunta, i) => {
+        const correta = pergunta.dataset.answer;
+        const labels = pergunta.querySelectorAll('label');
+
+        labels.forEach(label => {
+          const input = label.querySelector('input');
+          label.classList.remove('correct', 'incorrect', 'selected');
+
+          if (input.value === correta) {
+            label.classList.add('correct');
+          }
+
+          if (respostasSelecionadas[i] === input.value && input.value !== correta) {
+            label.classList.add('incorrect');
+          }
+
+          if (respostasSelecionadas[i] === correta) {
+            corretas++;
+          }
+
+          input.disabled = true;
+        });
+
+        pergunta.classList.add('active', 'final');
+      });
+
+      btn.style.display = 'none';
+      resultado.textContent = `Você acertou ${corretas} de ${perguntas.length} perguntas!`;
+      resultado.scrollIntoView({ behavior: 'smooth' });
+    }
   </script>
 </body>
 </html>
